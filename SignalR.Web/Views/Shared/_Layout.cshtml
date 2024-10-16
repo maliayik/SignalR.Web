@@ -41,9 +41,20 @@
             &copy; 2024 - SignalR.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    
+  @*   1.yol signalr libary cloud ile cdn kullanarak yükleme
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js" integrity="sha512-7SRCYIJtR6F8ocwW7UxW6wGKqbSyqREDbfCORCbGLatU0iugBLwyOXpzhkPyHIFdBO0K2VCu57fvP2Twgx1o2A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> *@
+
+    @*     2.yol npm microsoft paket kullnarak yükleme. *@
+
+    <script src="~/lib/signalr/signalr.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
