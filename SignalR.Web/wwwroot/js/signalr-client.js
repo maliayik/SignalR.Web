@@ -2,8 +2,11 @@
 //bu metot tüm sayfa yüklendikten sonra çalışacak olan metottur.
 $(document).ready(function () {
     const broadcastMessageToAllClientHubMethodCall = "BroadcastMessageToAllClient";
+    const broadcastMessageToCallerClient = "BroadcastMessageToCallerClient";
+
     const receiveMessageForAllClientMethodCall = "ReceiveMessageForAllClient";
     const receiveConnectedClientCountAllClient = "ReceiveConnectedClientCountAllClient";
+    const receiveMessageForCallerClient = "ReceiveMessageForCallerClient";
 
     //client huba bağlanmak için kullanılır.
     const connection = new signalR.HubConnectionBuilder().withUrl("/exampleTypeSafeHub").configureLogging(signalR.LogLevel.Information).build();
@@ -24,6 +27,9 @@ $(document).ready(function () {
         console.log("Gelen Mesaj: ", message);
     })
 
+    connection.on(receiveMessageForCallerClient, (message) => {
+        console.log("(Caller) Gelen Mesaj: ", message);
+    })
 
     var span_client_count = $("#span-connected-client-count");
 
@@ -38,5 +44,13 @@ $(document).ready(function () {
         const message = "Hello World!";
 
         connection.invoke(broadcastMessageToAllClientHubMethodCall, message).catch(err => console.error("hata", err))
+    })
+
+    
+    $("#btn-send-message-caller-client").click(function () {
+
+        const message = "Hello World!";
+
+        connection.invoke(broadcastMessageToCallerClient, message).catch(err => console.error("hata", err))
     })
 })

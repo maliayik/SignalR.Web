@@ -3,7 +3,7 @@
 }
 
 @* Layoutta bulunan script sectionumuzu burada çağırdık tüm sayfada signalr kullanmak için *@
-@section Scripts{
+@section Scripts {
     <script src="~/js/signalr-client.js"></script>
 }
 
@@ -13,9 +13,10 @@
             <button type="button" class="btn btn-primary">
                 Connected Client Count <span id="span-connected-client-count" class="badge text-bg-secondary">4</span>
             </button>
-          <button id="btn-send-message-all-client">Tüm client'lara gönder</button>
+            <button id="btn-send-message-all-client">Tüm client'lara gönder</button>
+            <button id="btn-send-message-caller-client">İstek yapan client'a gönder</button>
         </div>
-        
+
     </div>
 
 

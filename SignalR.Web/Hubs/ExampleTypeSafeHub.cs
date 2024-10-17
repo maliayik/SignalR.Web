@@ -7,7 +7,7 @@ namespace SignalR.Web.Hubs
         //clienta kaç tane connect var onu tutmak için bir değişken tanımlandı.
         private static int ConnectedClientCount = 0;
 
-        //bu metot ise hub tarafından çalıştırılarak client tarafını tetikleyecek.
+        //bu metot ise hub tarafından çalıştırılarak tüm client tarafını tetikleyecek.
         public async Task BroadcastMessageToAllClient(string message)
         {
             //tip güvenlikli tanımlamak için interface kullanıldı.
@@ -15,6 +15,7 @@ namespace SignalR.Web.Hubs
                     
         }
 
+        //hub'a kaç client bağlandğı bilgisini tutmak için kullanılan metot.
         public override async Task OnConnectedAsync()
         {
             ConnectedClientCount++;
@@ -23,12 +24,19 @@ namespace SignalR.Web.Hubs
             await base.OnConnectedAsync(); 
         }
 
+        //hub'dan ayrılan client sayısını tutmak için kullanılan metot.
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             ConnectedClientCount--;
 
            await Clients.All.ReceiveConnectedClientCountAllClient(ConnectedClientCount);
            await base.OnDisconnectedAsync(exception);
+        }
+
+        //Hub'u sadece çağıran client'a mesaj göndermek için kullanılan metot.
+        public async Task BroadcastMessageToCallerClient(string message)
+        {            
+            await Clients.Caller.ReceiveMessageForCallerClient(message);
         }
     }
 }
