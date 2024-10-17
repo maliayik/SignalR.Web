@@ -6,7 +6,7 @@ $(document).ready(function () {
     const receiveMessageForAllClientMethodCall = "ReceiveMessageForAllClient";
 
     //client huba bağlanmak için kullanılır.
-    const connection = new signalR.HubConnectionBuilder().withUrl("/examplehub").configureLogging(signalR.LogLevel.Information).build();
+    const connection = new signalR.HubConnectionBuilder().withUrl("/exampleTypeSafeHub").configureLogging(signalR.LogLevel.Information).build();
 
     function start() {
         connection.start().then(() =>
