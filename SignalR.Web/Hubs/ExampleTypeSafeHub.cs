@@ -38,6 +38,12 @@ namespace SignalR.Web.Hubs
         {            
             await Clients.Caller.ReceiveMessageForCallerClient(message);
         }
+
+        //Hubu çağıran client hariç diğer clientlara mesaj göndermek için kullanılan metot.
+        public async Task BroadcastMessageToOthersClient(string message)
+        {
+            await Clients.Others.ReceiveMessageForOthersClient(message);
+        }
     }
 }
  
