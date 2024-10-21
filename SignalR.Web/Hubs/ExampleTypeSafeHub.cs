@@ -44,6 +44,13 @@ namespace SignalR.Web.Hubs
         {
             await Clients.Others.ReceiveMessageForOthersClient(message);
         }
+
+        //Belirli bir connectionId'ye sahip client'a mesaj göndermek için kullanılan metot.
+        public async Task BroadcastMessageToIndividualClient(string connectionId, string message)
+        {
+            await Clients.Client(connectionId).ReceiveMessageForIndividualClient(message);
+        }
+
     }
 }
  
