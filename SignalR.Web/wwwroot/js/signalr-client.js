@@ -1,4 +1,6 @@
-﻿
+﻿//client huba bağlanmak için kullanılır.
+const connection = new signalR.HubConnectionBuilder().withUrl("/exampleTypeSafeHub").configureLogging(signalR.LogLevel.Information).build();
+
 //bu metot tüm sayfa yüklendikten sonra çalışacak olan metottur.
 $(document).ready(function () {
     const broadcastMessageToAllClientHubMethodCall = "BroadcastMessageToAllClient";
@@ -16,10 +18,79 @@ $(document).ready(function () {
     const broadcastMessageToIndividualClient = "BroadcastMessageToIndividualClient";
     const receiveMessageForIndividualClient = "ReceiveMessageForIndividualClient";
 
+    ///grup işlemleri
+    const groupA = "GroupA";
+    const groupB = "GroupB";
+    let currentGroupList = [];
+
+    function refleshGroupList() {
+        $("#groupList").empty();
+        currentGroupList.forEach(x => {
+            $("#groupList").append(`<p>${x}</p>`);
+        })
+    }
+
+    $("#btn-groupA-add").click(function () {
+
+        if (currentGroupList.includes(groupA)) return;
+
+        connection.invoke("AddGroup", groupA).then(() => {
+            currentGroupList.push(groupA);
+            refleshGroupList();
+        })
+
+    })
+
+    $("#btn-groupA-remove").click(function () {
+        if (!currentGroupList.includes(groupA)) return;
+
+        connection.invoke("RemoveGroup", groupA).then(() => {
+            currentGroupList = currentGroupList.filter(x => x !== groupA);
+            refleshGroupList();
+        })
+
+    })
+
+    $("#btn-groupB-add").click(function () {      
+        if (currentGroupList.includes(groupB)) return;
+
+        connection.invoke("AddGroup", groupB).then(() => {
+            currentGroupList.push(groupB);
+            refleshGroupList();
+        })
+
+    })
+
+    $("#btn-groupB-remove").click(function () {     
+        if (!currentGroupList.includes(groupB)) return;
+
+        connection.invoke("RemoveGroup", groupB).then(() => {
+            currentGroupList = currentGroupList.filter(x => x !== groupB);
+            refleshGroupList();
+        })
+
+    })
+
+    $("#btn-groupA-send-message").click(function () {
+        const message = "Group A mesaj";
+        connection.invoke("BroadcastMessageToGroupClients", groupA, message).catch(err =>
+            console.error("hata", err))
+        console.log("Mesaj gönderildi.");
+    })
+
+    $("#btn-groupB-send-message").click(function () {
+        const message = "Group B mesaj";
+        connection.invoke("BroadcastMessageToGroupClients", groupB, message).catch(err =>
+            console.error("hata", err))
+        console.log("Mesaj gönderildi.");
+    })
+
+    connection.on("ReceiveMessageForGroupClients", (message) => {
+        console.log("Gelen Mesaj: ", message);
+    })
 
 
-    //client huba bağlanmak için kullanılır.
-    const connection = new signalR.HubConnectionBuilder().withUrl("/exampleTypeSafeHub").configureLogging(signalR.LogLevel.Information).build();
+
 
     function start() {
         connection.start().then(() => {

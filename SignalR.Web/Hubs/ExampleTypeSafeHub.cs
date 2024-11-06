@@ -2,7 +2,7 @@
 
 namespace SignalR.Web.Hubs
 {
-    public class ExampleTypeSafeHub:Hub<IExampleTypeSafeHub>
+    public class ExampleTypeSafeHub : Hub<IExampleTypeSafeHub>
     {
         //clienta kaç tane connect var onu tutmak için bir değişken tanımlandı.
         private static int ConnectedClientCount = 0;
@@ -12,7 +12,7 @@ namespace SignalR.Web.Hubs
         {
             //tip güvenlikli tanımlamak için interface kullanıldı.
             await Clients.All.ReceiveMessageForAllClient(message);
-                    
+
         }
 
         //hub'a kaç client bağlandğı bilgisini tutmak için kullanılan metot.
@@ -21,7 +21,7 @@ namespace SignalR.Web.Hubs
             ConnectedClientCount++;
 
             await Clients.All.ReceiveConnectedClientCountAllClient(ConnectedClientCount);
-            await base.OnConnectedAsync(); 
+            await base.OnConnectedAsync();
         }
 
         //hub'dan ayrılan client sayısını tutmak için kullanılan metot.
@@ -29,13 +29,13 @@ namespace SignalR.Web.Hubs
         {
             ConnectedClientCount--;
 
-           await Clients.All.ReceiveConnectedClientCountAllClient(ConnectedClientCount);
-           await base.OnDisconnectedAsync(exception);
+            await Clients.All.ReceiveConnectedClientCountAllClient(ConnectedClientCount);
+            await base.OnDisconnectedAsync(exception);
         }
 
         //Hub'u sadece çağıran client'a mesaj göndermek için kullanılan metot.
         public async Task BroadcastMessageToCallerClient(string message)
-        {            
+        {
             await Clients.Caller.ReceiveMessageForCallerClient(message);
         }
 
@@ -51,6 +51,33 @@ namespace SignalR.Web.Hubs
             await Clients.Client(connectionId).ReceiveMessageForIndividualClient(message);
         }
 
+        //Grup içerisinden bir client mesaj gönderdiğinde çağrılacak olan metot.
+        public async Task BroadcastMessageToGroupClients(string groupName, string message)
+        {
+            await Clients.Group(groupName).ReceiveMessageForGroupClients(message);
+        }
+
+        //Gruba dahil olma işlemi için kullanılan metot.
+        public async Task AddGroup(string groupName)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+
+            //gruba eklendiğinde eklenen kişiye gönderilecek mesaj
+            await Clients.Caller.ReceiveMessageForCallerClient($"{groupName} grubuna dahil oldunuz.");
+            //gruba dahil olduğunda tüm clientlara gönderilecek mesaj
+            await Clients.Others.ReceiveMessageForOthersClient($"Kullanıcı{Context.ConnectionId} {groupName} grubuna dahil oldu.");
+
+            //gruba dahil olan kişinin olduğu grubun tüm clientlarına gönderilecek mesaj
+            await Clients.Group(groupName).ReceiveMessageForGroupClients($"Kullanıcı{Context.ConnectionId} {groupName} grubuna dahil oldu.");
+        }
+
+        public async Task RemoveGroup(string groupName)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+            await Clients.Caller.ReceiveMessageForCallerClient($" {groupName} grubundan çıktınız.");
+            await Clients.Others.ReceiveMessageForOthersClient($"Kullanıcı{Context.ConnectionId} {groupName} grubundan çıktı.");
+            await Clients.Group(groupName).ReceiveMessageForGroupClients($"Kullanıcı{Context.ConnectionId} {groupName} grubundan çıktı.");
+        }
     }
 }
  
