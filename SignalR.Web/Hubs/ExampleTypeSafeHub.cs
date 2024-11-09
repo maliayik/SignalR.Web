@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using SignalR.Web.Models;
 
 namespace SignalR.Web.Hubs
 {
@@ -12,6 +13,12 @@ namespace SignalR.Web.Hubs
         {
             //tip güvenlikli tanımlamak için interface kullanıldı.
             await Clients.All.ReceiveMessageForAllClient(message);
+
+        }
+
+        public async Task BroadcastTypedMessageToAllClient(Product product)
+        {            
+            await Clients.All.ReceiveTypedMessageForAllClient(product);
 
         }
 

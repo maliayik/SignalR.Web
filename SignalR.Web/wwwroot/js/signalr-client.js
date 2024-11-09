@@ -18,6 +18,9 @@ $(document).ready(function () {
     const broadcastMessageToIndividualClient = "BroadcastMessageToIndividualClient";
     const receiveMessageForIndividualClient = "ReceiveMessageForIndividualClient";
 
+    const receiveTypedMessageForAllClient = "ReceiveTypedMessageForAllClient";
+    const broadcastTypedMessageToAllClient = "BroadcastTypedMessageToAllClient";
+
     ///grup işlemleri
     const groupA = "GroupA";
     const groupB = "GroupB";
@@ -124,9 +127,9 @@ $(document).ready(function () {
         console.log("(Others) Gelen Mesaj: ", message);
     })
 
-    connection.on(receiveMessageForIndividualClient, (message) => {
-        console.log("(Individual) Gelen Mesaj: ", message);
-    })
+    connection.on(receiveTypedMessageForAllClient, (product) => {
+        console.log("(Individual) Gelen Mesaj: ", product);
+    })    
 
     var span_client_count = $("#span-connected-client-count");
 
@@ -165,4 +168,11 @@ $(document).ready(function () {
         connection.invoke(broadcastMessageToIndividualClient, connectionId, message).catch(err => console.error("hata", err))
         console.log("Mesaj gönderildi.");
     })
+
+    $("#btn-send-typed-message-all-client").click(function () {
+        
+        const product = { id: 1, name: "Product 1", price: 100 };
+        connection.invoke(broadcastTypedMessageToAllClient, product).catch(err => console.error("hata", err))
+        console.log("Mesaj gönderildi.");
+    });
 })
