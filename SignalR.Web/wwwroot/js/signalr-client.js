@@ -12,7 +12,6 @@ $(document).ready(function () {
     const broadcastMessageToOthersClient = "BroadcastMessageToOthersClient";
     const receiveMessageForOthersClient = "ReceiveMessageForOthersClient";
 
-
     const receiveConnectedClientCountAllClient = "ReceiveConnectedClientCountAllClient";
 
     const broadcastMessageToIndividualClient = "BroadcastMessageToIndividualClient";
@@ -25,7 +24,25 @@ $(document).ready(function () {
     const groupA = "GroupA";
     const groupB = "GroupB";
     let currentGroupList = [];
+    async function start() {
+        try {
+            await connection.start().then(() => {
+                console.log("Hub ile bağlantı kuruldu!");
+                $("#connectionId").html(`Connection Id: ${connection.connectionId}`);
+            });
+        }
+        catch (err) {
+            console.error("hubn ile bağlantı kurulamadı", err);
+            setTimeout(() => start(), 5000);
+        }
+    }
 
+    //connection kopar ise tekrar bağlanması için
+    connection.onclose(async () => {
+        await start();
+    })
+
+    start();
     function refleshGroupList() {
         $("#groupList").empty();
         currentGroupList.forEach(x => {
@@ -34,14 +51,12 @@ $(document).ready(function () {
     }
 
     $("#btn-groupA-add").click(function () {
-
         if (currentGroupList.includes(groupA)) return;
 
         connection.invoke("AddGroup", groupA).then(() => {
             currentGroupList.push(groupA);
             refleshGroupList();
         })
-
     })
 
     $("#btn-groupA-remove").click(function () {
@@ -51,27 +66,24 @@ $(document).ready(function () {
             currentGroupList = currentGroupList.filter(x => x !== groupA);
             refleshGroupList();
         })
-
     })
 
-    $("#btn-groupB-add").click(function () {      
+    $("#btn-groupB-add").click(function () {
         if (currentGroupList.includes(groupB)) return;
 
         connection.invoke("AddGroup", groupB).then(() => {
             currentGroupList.push(groupB);
             refleshGroupList();
         })
-
     })
 
-    $("#btn-groupB-remove").click(function () {     
+    $("#btn-groupB-remove").click(function () {
         if (!currentGroupList.includes(groupB)) return;
 
         connection.invoke("RemoveGroup", groupB).then(() => {
             currentGroupList = currentGroupList.filter(x => x !== groupB);
             refleshGroupList();
         })
-
     })
 
     $("#btn-groupA-send-message").click(function () {
@@ -92,27 +104,6 @@ $(document).ready(function () {
         console.log("Gelen Mesaj: ", message);
     })
 
-
-
-
-    function start() {
-        connection.start().then(() => {
-            console.log("Hub ile bağlantı kuruldu!");
-            $("#connectionId").html(`Connection Id: ${connection.connectionId}`);
-        });
-    }
-    try {
-        start();
-    }
-    catch {
-        setTimeout(() => start(), 5000);
-    }
-
-
-
-
-
-
     //subcribers
     //hub tarafından client'a mesaj gönderildiğinde çalışacak olan metotda subscribe olunur.
     connection.on(receiveMessageForAllClientMethodCall, (message) => {
@@ -129,7 +120,7 @@ $(document).ready(function () {
 
     connection.on(receiveTypedMessageForAllClient, (product) => {
         console.log("(Individual) Gelen Mesaj: ", product);
-    })    
+    })
 
     var span_client_count = $("#span-connected-client-count");
 
@@ -138,31 +129,25 @@ $(document).ready(function () {
         console.log("connected client count:", count);
     })
 
-
     $("#btn-send-message-all-client").click(function () {
-
         const message = "Hello World!";
         connection.invoke(broadcastMessageToAllClientHubMethodCall, message).catch(err => console.error("hata", err))
         console.log("Mesaj gönderildi.");
     })
 
-
     $("#btn-send-message-caller-client").click(function () {
-
         const message = "Hello World!";
         connection.invoke(broadcastMessageToCallerClient, message).catch(err => console.error("hata", err))
         console.log("Mesaj gönderildi.");
     })
 
     $("#btn-send-message-others-client").click(function () {
-
         const message = "Hello World!";
         connection.invoke(broadcastMessageToOthersClient, message).catch(err => console.error("hata", err))
         console.log("Mesaj gönderildi.");
     })
 
     $("#btn-send-message-individual-client").click(function () {
-
         const message = "Hello World!";
         const connectionId = $("#text-connectionId").val();
         connection.invoke(broadcastMessageToIndividualClient, connectionId, message).catch(err => console.error("hata", err))
@@ -170,7 +155,6 @@ $(document).ready(function () {
     })
 
     $("#btn-send-typed-message-all-client").click(function () {
-        
         const product = { id: 1, name: "Product 1", price: 100 };
         connection.invoke(broadcastTypedMessageToAllClient, product).catch(err => console.error("hata", err))
         console.log("Mesaj gönderildi.");
