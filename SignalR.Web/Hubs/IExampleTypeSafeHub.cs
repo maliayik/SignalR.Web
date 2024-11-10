@@ -5,11 +5,19 @@ namespace SignalR.Web.Hubs
     public interface IExampleTypeSafeHub
     {
         Task ReceiveMessageForAllClient(string message);
+
         Task ReceiveTypedMessageForAllClient(Product product);
+
+        Task ReceiveMessageAsStreamForAllClient(string name);
+
         Task ReceiveConnectedClientCountAllClient(int clientCount);
+
         Task ReceiveMessageForCallerClient(string message);
+
         Task ReceiveMessageForOthersClient(string message);
+
         Task ReceiveMessageForIndividualClient(string message);
+
         Task ReceiveMessageForGroupClients(string message);
     }
 }

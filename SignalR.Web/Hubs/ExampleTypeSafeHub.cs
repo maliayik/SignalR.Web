@@ -13,13 +13,21 @@ namespace SignalR.Web.Hubs
         {
             //tip güvenlikli tanımlamak için interface kullanıldı.
             await Clients.All.ReceiveMessageForAllClient(message);
-
         }
 
         public async Task BroadcastTypedMessageToAllClient(Product product)
-        {            
+        {
             await Clients.All.ReceiveTypedMessageForAllClient(product);
+        }
 
+        //streaming işlemi için kullanılan metot. içerisine gelen chunkları tek tek clientlara gönderir.
+        public async Task BroadcastStreamDataToAllClient(IAsyncEnumerable<string> nameAsChunk)
+        {
+            await foreach (var name in nameAsChunk)
+            {
+                await Task.Delay(1000);
+                await Clients.All.ReceiveMessageAsStreamForAllClient(name);
+            }
         }
 
         //hub'a kaç client bağlandğı bilgisini tutmak için kullanılan metot.
@@ -87,4 +95,3 @@ namespace SignalR.Web.Hubs
         }
     }
 }
- 

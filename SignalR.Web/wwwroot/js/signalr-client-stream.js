@@ -18,5 +18,29 @@
         await start();
     })
 
+    const broadcastStreamDataToAllClient = "BroadcastStreamDataToAllClient";
+    const receiveMessageAsStreamForAllClient = "ReceiveMessageAsStreamForAllClient";
+
+    connection.on(receiveMessageAsStreamForAllClient, (name) => {
+        $("#streamBox").append(`<p>${name}</p>`);
+    });
+
+    //chunklarımızı hubumuza göndermeye yarayan buton
+    $("#btn_FromClient_ToHub").click(function () {
+        const names = $("#txt_stream").val();
+
+        const nameAsChunk = names.split(";");
+
+        const subject = new signalR.Subject();
+
+        connection.send(broadcastStreamDataToAllClient, subject).catch(err => console.error(err.toString()));
+
+        nameAsChunk.forEach(name => {
+            subject.next(name);
+        });
+
+        subject.complete();
+    });
+
     start();
 });
