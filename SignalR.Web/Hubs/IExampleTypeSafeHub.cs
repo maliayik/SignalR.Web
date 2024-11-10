@@ -10,6 +10,8 @@ namespace SignalR.Web.Hubs
 
         Task ReceiveMessageAsStreamForAllClient(string name);
 
+        Task ReceiveProductAsStreamForAllClient(Product product);
+
         Task ReceiveConnectedClientCountAllClient(int clientCount);
 
         Task ReceiveMessageForCallerClient(string message);

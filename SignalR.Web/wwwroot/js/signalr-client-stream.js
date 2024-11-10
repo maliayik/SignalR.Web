@@ -21,11 +21,18 @@
     const broadcastStreamDataToAllClient = "BroadcastStreamDataToAllClient";
     const receiveMessageAsStreamForAllClient = "ReceiveMessageAsStreamForAllClient";
 
+    const broadcastStreamProductToAllClient = "BroadcastStreamProductToAllClient";
+    const receiveProductAsStreamForAllClient = "ReceiveProductAsStreamForAllClient";
+
     connection.on(receiveMessageAsStreamForAllClient, (name) => {
         $("#streamBox").append(`<p>${name}</p>`);
     });
 
-    //chunklarımızı hubumuza göndermeye yarayan buton
+    connection.on(receiveProductAsStreamForAllClient, (product) => {
+        $("#streamBox").append(`<p>${product.id}-${product.name}-${product.price}</p>`);
+    });
+
+    //isimleri chunklar ile parça parça clienttan  hubumuza göndermeye yarayan buton
     $("#btn_FromClient_ToHub").click(function () {
         const names = $("#txt_stream").val();
 
@@ -37,6 +44,21 @@
 
         nameAsChunk.forEach(name => {
             subject.next(name);
+        });
+
+        subject.complete();
+    });
+
+    //product listemizi chunklar ile parça parça clienttan  hubumuza göndermeye yarayan buton
+    $("#btn_FromClient_ToHub2").click(function () {
+        const productList = [{ id: 1, name: "Product1", price: 100 }, { id: 2, name: "Product2", price: 200 }, { id: 3, name: "Product3", price: 300 }];
+
+        const subject = new signalR.Subject();
+
+        connection.send(broadcastStreamProductToAllClient, subject).catch(err => console.error(err.toString()));
+
+        productList.forEach(product => {
+            subject.next(product);
         });
 
         subject.complete();

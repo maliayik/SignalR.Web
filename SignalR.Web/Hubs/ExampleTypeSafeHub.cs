@@ -30,6 +30,15 @@ namespace SignalR.Web.Hubs
             }
         }
 
+        public async Task BroadcastStreamProductToAllClient(IAsyncEnumerable<Product> productAsChunk)
+        {
+            await foreach (var product in productAsChunk)
+            {
+                await Task.Delay(1000);
+                await Clients.All.ReceiveProductAsStreamForAllClient(product);
+            }
+        }
+
         //hub'a kaç client bağlandğı bilgisini tutmak için kullanılan metot.
         public override async Task OnConnectedAsync()
         {
