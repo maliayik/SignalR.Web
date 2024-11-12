@@ -24,6 +24,8 @@
     const broadcastStreamProductToAllClient = "BroadcastStreamProductToAllClient";
     const receiveProductAsStreamForAllClient = "ReceiveProductAsStreamForAllClient";
 
+    const broadcastFromHubToClient = "BroadcastFromHubToClient";
+
     connection.on(receiveMessageAsStreamForAllClient, (name) => {
         $("#streamBox").append(`<p>${name}</p>`);
     });
@@ -62,6 +64,13 @@
         });
 
         subject.complete();
+    });
+
+    $("#btn_FromHubToClient").click(function () {
+        connection.stream(broadcastFromHubToClient, 5).subscribe({
+
+            next: (message) => $("#streamBox").append(`<p>${message}</p>`)
+        });    
     });
 
     start();

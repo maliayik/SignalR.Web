@@ -39,6 +39,17 @@ namespace SignalR.Web.Hubs
             }
         }
 
+        //hangi client bu metodu çağırıyorsa bu metoda subscire olur ve dönen datayı anlık olarak alır.
+        public async IAsyncEnumerable<string> BroadcastFromHubToClient(int count)
+        {
+            //yield keywordu ile birlikte o anki değeri aldığımız anda döndürür.
+            foreach (var item in Enumerable.Range(1, count).ToList())
+            {
+                await Task.Delay(1000);
+                yield return $"{item}.data";
+            }
+        }
+
         //hub'a kaç client bağlandğı bilgisini tutmak için kullanılan metot.
         public override async Task OnConnectedAsync()
         {
