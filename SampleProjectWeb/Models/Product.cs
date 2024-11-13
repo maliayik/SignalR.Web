@@ -1,0 +1,15 @@
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace SampleProjectWeb.Models
+{
+    public class Product
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = default!; //null olamıyacağını belirttik.
+
+        [Precision(18,2)]
+        public decimal Price { get; set; }
+        public string Description { get; set; } = default!;
+        public string UserId { get; set; } = default!;
+    }
+}
