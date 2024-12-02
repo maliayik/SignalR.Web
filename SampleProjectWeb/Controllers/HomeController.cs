@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using SampleProjectWeb.Models;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using SampleProjectWeb.Models.ViewModels;
+using SampleProjectWeb.Services;
 
 namespace SampleProjectWeb.Controllers
 {
-    public class HomeController(ILogger<HomeController> logger, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, AppDbContext context) : Controller
+    public class HomeController(ILogger<HomeController> logger, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, AppDbContext context,FileService fileService) : Controller
     {
         public IActionResult Index()
         {
@@ -113,6 +115,19 @@ namespace SampleProjectWeb.Controllers
 
             return View(productList);
         }
+        
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> CreateExcel()
+        {
+            var response = new
+            {
+                Status = await fileService.AddMessageToQueue()
+            };
+
+            return Json(response);
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
