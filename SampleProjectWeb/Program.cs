@@ -5,6 +5,7 @@ using SampleProjectWeb.BackgroundServices;
 using SampleProjectWeb.Models;
 using SampleProjectWeb.Services;
 using System.Threading.Channels;
+using SampleProjectWeb.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,7 @@ builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Directory.
 
 builder.Services.AddHostedService<CreateExcelBackgroundService>();
 
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -40,6 +42,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.MapHub<AppHub>("/hub");
 
 app.UseRouting();
 

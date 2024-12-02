@@ -4,6 +4,8 @@ using System.Data;
 using System.Threading.Channels;
 using ClosedXML.Excel;
 using DataTable = System.Data.DataTable;
+using SampleProjectWeb.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace SampleProjectWeb.BackgroundServices
 {
@@ -18,6 +20,8 @@ namespace SampleProjectWeb.BackgroundServices
             //kuyruk içerisine mesaj gelene kadar bekler ne zaman gelirse döngünün içerisine girer.
             while (await channel.Reader.WaitToReadAsync(stoppingToken))
             {
+                await Task.Delay(4000);
+
                 var (userId, products) = await channel.Reader.ReadAsync(stoppingToken);
 
                 var wwwrootfolder = fileProvider.GetDirectoryContents("wwwroot");
@@ -40,6 +44,14 @@ namespace SampleProjectWeb.BackgroundServices
                 await using var excelFileStream = new FileStream(newExcelFilePath, FileMode.Create);
 
                 wb.SaveAs(excelFileStream);
+
+                //Dosya oluşturma işlemi bittiğinde Hub ile birlikte client'a bilgilendirme gönderiyoruz.
+                using (var scope = serviceProvider.CreateScope())
+                {
+                    var appHub = scope.ServiceProvider.GetRequiredService<IHubContext<AppHub>>();
+
+                    await appHub.Clients.User(userId).SendAsync("AlertCompleteFile", $"/files/{newExcelFileName}", stoppingToken);
+                }
 
             }
         }
